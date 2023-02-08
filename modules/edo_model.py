@@ -53,6 +53,7 @@ class EDOModel:
 
         # Solve the system
         x = np.linalg.solve(normal_mat, b)
+        print(x)
         return x
 
 
@@ -70,9 +71,9 @@ class EDOModel:
         return result
 
 
-    def graph(self):
+    def graph(self, final_t, steps):
 
-        t = np.linspace(0, len(self.D), len(self.D))
+        t = np.linspace(0, final_t, steps)
         
         # Solve the ODEs
         from scipy.integrate import odeint
@@ -84,14 +85,11 @@ class EDOModel:
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
         for i in range(len(Y)):
-            ax.plot(t, Y[i], self.colors[i % len(self.colors)], alpha=0.5, lw=2, label='y(t)')
-
-        # Get a subset of the data to plot
-        data_subset = self.D[::10]
+            ax.plot(t, Y[i], self.colors[i % len(self.colors)], alpha=0.5, lw=2)
 
         # Plot the data as points
         for i in range(len(Y)):
-            ax.plot(data_subset[:, 0], data_subset[:, i + 1], self.colors[i % len(self.colors)] + 'o')
+            ax.plot(self.D[:, 0], self.D[:, i + 1], self.colors[i % len(self.colors)] + 'o')
 
         ax.set_ylim(0,1.2)
         ax.yaxis.set_tick_params(length=0)
