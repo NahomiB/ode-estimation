@@ -16,11 +16,11 @@ def get_SIR_model(y, t, a, b):
 def generate_points():
 
     # Define the parameters
-    final_t = 160
-    steps = 160
+    final_t = 100
+    steps = 100
 
-    a = 0.3
-    b = 0.2
+    a = 0.4
+    b = 0.1
     S0 = 0.99
     I0 = 0.01
     R0 = 0.0
@@ -37,7 +37,7 @@ def generate_points():
     with open('data/sir_model.csv', 'w') as f:
         f.write('t,S,I,R \n')
         for i in range(steps):
-            if i % 5 == 0:
+            if i % 1 == 0:
                 f.write(f'{int(final_t / steps) * i},{S[i]},{I[i]},{R[i]} \n')
 
     # Plot the data on three separate curves for S(t), I(t) and R(t)

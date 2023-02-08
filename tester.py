@@ -36,5 +36,5 @@ system = [[f_11],
 restrictions = [[0, 1], [2, 3]]
 
 sir = EDOModel(system, restrictions, D)
-sir.graph(160, 160)
+sir.graph(100, 100)
 
