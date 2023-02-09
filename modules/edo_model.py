@@ -4,10 +4,32 @@ from matplotlib.offsetbox import AnchoredText
 
 # Create a class for the model
 class EDOModel:
+    """
+    A class used to represent a system of linear ordinary differential equations
 
+    Attributes
+    ----------
+    params -> list
+        Return the estimated parameters of the system in order
 
-    def __init__(self, system, restrictions, data):
+    Methods
+    -------
+    graph(start_t, final_t, steps):
+        Plot the estimated system of equations and the data
+    """
 
+    def __init__(self, system : list, restrictions : list, data : list):
+        """
+        Parameters
+        ----------
+        system : list
+            A list of lists of functions that represent the system of equations
+        restrictions: list
+            A list of pairs, where a pair represents the index of the parameters that must be equal
+        data: list
+            A set of points that must be approximated
+        """
+        
         self.__colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']        
 
         self.__system = system
@@ -15,16 +37,32 @@ class EDOModel:
         self.__D = data
 
         self.__params = self.__obtain_params()
-
+        self.params = self.__params[:len(self.__params) - len(self.__restrictions)]
     
-    def params(self):
+
+    def params(self) -> list:
+        """
+        Return the estimated parameters of the system in order
+        """
 
         return self.__params[:len(self.__params) - len(self.__restrictions)]
 
 
-    def graph(self, final_t, steps):
+    def graph(self, start_t, final_t, steps):
+        """
+        Plot the estimated system of equations and the data
 
-        t = np.linspace(0, final_t, steps)
+        Parameters
+        ----------
+        start_t : float
+            The initial time
+        final_t : float
+            The final time
+        steps : int
+            The number of steps
+        """
+
+        t = np.linspace(start_t, final_t, steps)
         
         # Solve the ODEs
         from scipy.integrate import odeint
@@ -42,7 +80,7 @@ class EDOModel:
         for i in range(len(Y)):
             ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)] + 'o')
 
-        p = self.params()
+        p = self.params
         params_text = ''
         for i in range(len(p)):
             if i > 0: params_text += '\n'
@@ -57,8 +95,6 @@ class EDOModel:
         ax.yaxis.set_tick_params(length=0)
         ax.xaxis.set_tick_params(length=0)
         ax.grid(visible=True, which='major', c='w', lw=2, ls='-')
-        legend = ax.legend()
-        legend.get_frame().set_alpha(0.5)
         for spine in ('top', 'right', 'bottom', 'left'):
             ax.spines[spine].set_visible(False)
         plt.show()
