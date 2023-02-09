@@ -92,7 +92,7 @@ class EDOModel:
             row += 1
 
         # Create right side vector for the linear equations system
-        b = np.zeros(6)
+        b = np.zeros(mat_size)
 
         cont = 0
         for eq in range(len(self.__system)):
