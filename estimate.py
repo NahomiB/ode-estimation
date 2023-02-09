@@ -15,6 +15,7 @@ system = [[f_11],
           [f_21, f_22],
           [f_31]]
 
+# On this case, the 0th and 1st parameters must be equal. Also applies for the 2nd and 3rd
 restrictions = [[0, 1], [2, 3]]
 
 sir = EDOModel(system, restrictions, D)
