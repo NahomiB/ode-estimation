@@ -17,7 +17,8 @@ system = [[f_11],
 
 # On this case, the 0th and 1st parameters must be equal. Also applies for the 2nd and 3rd
 restrictions = [[0, 1], [2, 3]]
+original_params = [0.4, 0.4, 0.1, 0.1]
 
-sir = EDOModel(system, restrictions, D)
+sir = EDOModel(system, restrictions, D, original_params)
 print(sir.params)
 sir.graph(0, 100, 100)

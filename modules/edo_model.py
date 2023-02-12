@@ -18,7 +18,7 @@ class EDOModel:
         Plot the estimated system of equations and the data
     """
 
-    def __init__(self, system : list, restrictions : list, data : list):
+    def __init__(self, system : list, restrictions : list, data : list, original_params = []):
         """
         Parameters
         ----------
@@ -30,7 +30,7 @@ class EDOModel:
             A set of points that must be approximated
         """
         
-        self.__colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']        
+        self.__colors = ['b', 'r', 'g', 'c', 'm', 'y', 'k']        
 
         self.__system = system
         self.__restrictions = restrictions
@@ -38,7 +38,10 @@ class EDOModel:
 
         self.__params = self.__obtain_params()
         self.params = self.__params[:len(self.__params) - len(self.__restrictions)]
-    
+
+        self.__original_params = original_params
+        self.__original_flag = False
+
 
     def params(self) -> list:
         """
@@ -70,21 +73,31 @@ class EDOModel:
         ret = odeint(self.__get_model, y0, t)
         Y = ret.T
 
+        Y_original = []
+        if self.__original_params != []:
+            self.__original_flag = True
+            ret_original = odeint(self.__get_model, y0, t)
+            Y_original = ret_original.T
+            self.__original_flag = False
+
         # Plot the data on three separate curves for S(t), I(t) and R(t)
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
         for i in range(len(Y)):
-            ax.plot(t, Y[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2)
+            ax.plot(t, Y[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, label='Approx')
+
+        for i in range(len(Y_original)):
+            ax.plot(t, Y_original[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, linestyle='dashed', label='Original')
 
         # Plot the data as points
         for i in range(len(Y)):
-            ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)] + 'o')
+            ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)] + 'o', label='Data')
 
         p = self.params
         params_text = ''
         for i in range(len(p)):
             if i > 0: params_text += '\n'
-            params_text += 'a' + str(i + 1) + ' = ' +  str(round(p[i], 5))
+            params_text += f'a{str(i + 1)} = {str(round(p[i], 5))} - Orig: {self.__original_params[i]}'
 
         at = AnchoredText(
             params_text, prop=dict(size=10), frameon=True, loc='upper left')
@@ -95,6 +108,8 @@ class EDOModel:
         ax.yaxis.set_tick_params(length=0)
         ax.xaxis.set_tick_params(length=0)
         ax.grid(visible=True, which='major', c='w', lw=2, ls='-')
+        legend = ax.legend()
+        legend.get_frame().set_alpha(0.5)
         for spine in ('top', 'right', 'bottom', 'left'):
             ax.spines[spine].set_visible(False)
         plt.show()
@@ -148,7 +163,7 @@ class EDOModel:
         for equation in self.__system:
             right_member = 0
             for f in equation:
-                right_member += self.__params[cont] * f(t, *y)
+                right_member += (self.__params[cont] if self.__original_flag == False else self.__original_params[cont]) * f(t, *y)
                 cont += 1
             result.append(right_member)
 

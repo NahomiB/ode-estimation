@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 # Define the SIR model
 def get_SIR_model(y, t, a, b):
@@ -10,6 +11,11 @@ def get_SIR_model(y, t, a, b):
     dIdt = a * S * I - b * I
     dRdt = b * I
     return [dSdt, dIdt, dRdt]
+
+
+def noise(point, factor, additive):
+
+    return max(0.0, point + random.uniform(-factor, factor) * (1 if additive else point))
 
 
 # Graph a SIR model
@@ -25,6 +31,9 @@ def generate_points():
     I0 = 0.01
     R0 = 0.0
 
+    n_factor = 0.1
+    n_add = True
+
     # Define the time span
     t = np.linspace(0, final_t, steps)
 
@@ -34,11 +43,15 @@ def generate_points():
     ret = odeint(get_SIR_model, y0, t, args=(a, b))
     S, I, R = ret.T
 
+    data = []
     with open('data/sir_model.csv', 'w') as f:
         f.write('t,S,I,R \n')
         for i in range(steps):
-            if i % 1 == 0:
-                f.write(f'{int(final_t / steps) * i},{S[i]},{I[i]},{R[i]} \n')
+            points = [0.0, S0, I0, R0]
+            if i > 0:
+                points = [int(final_t / steps) * i, noise(S[i], n_factor, n_add), noise(I[i], n_factor, n_add), noise(R[i], n_factor, n_add)]
+            f.write(f'{int(final_t / steps) * i},{points[1]},{points[2]},{points[3]} \n')
+            data.append(points)
 
     # Plot the data on three separate curves for S(t), I(t) and R(t)
     fig = plt.figure(facecolor='w')
@@ -46,6 +59,11 @@ def generate_points():
     ax.plot(t, S, 'b', alpha=0.2, lw=2, label='Susceptible')
     ax.plot(t, I, 'r', alpha=0.2, lw=2, label='Infected')
     ax.plot(t, R, 'g', alpha=0.2, lw=2, label='Recovered')
+
+    D = np.array(data)
+    ax.plot(D[:, 0], D[:, 1], 'bo')
+    ax.plot(D[:, 0], D[:, 2], 'ro')
+    ax.plot(D[:, 0], D[:, 3], 'go')
 
     ax.set_xlabel('Time /days')
     ax.set_ylabel('Number (1000s)')
