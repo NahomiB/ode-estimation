@@ -15,6 +15,8 @@ y0 = [0.99, 0.01, 0.0]
 n_factor = 0.2
 n_add = False
 
+seed = None
+
 # Define the time span
 t = np.linspace(0, final_t, steps)
 
@@ -28,7 +30,7 @@ system = [[f_11],
         [f_31]]
 
 model = Model(system, params, y0)
-data = generate_points(model.get_Y(t), steps, n_factor, n_add)
+data = generate_points(model.get_Y(t), steps, n_factor, n_add, seed)
 
 estimator = Estimator(system, restrictions, data, params)
 estimator.graph(start_t, final_t, steps)

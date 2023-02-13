@@ -1,12 +1,17 @@
 import numpy as np
 import random
+import sys
 
 def noise(point, factor, additive):
 
     return max(0.0, point + random.uniform(-factor, factor) * (1 if additive else point))
 
 
-def generate_points(Y, steps, n_factor, n_add):
+def generate_points(Y, steps, n_factor, n_add, seed = None):
+
+    new_seed = random.randrange(sys.maxsize) if seed == None else seed
+    random.seed(new_seed)
+    print('Noise seed: ' + str(new_seed))
 
     data = []
     for i in range(steps):
