@@ -19,9 +19,8 @@ class Model:
         return ret.T
 
 
-    def graph(self):
+    def graph(self, t):
 
-        t = np.linspace(0, 100, 100)
         Y = self.get_Y(t)
 
         fig = plt.figure(facecolor='w')

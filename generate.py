@@ -4,8 +4,7 @@ from modules.model import Model
 from modules.points import generate_points, noise
 from modules.estimator import Estimator
 
-start_t = 0
-final_t = 100
+final_t = 50
 steps = 100
 
 params = [0.4, 0.4, 0.1, 0.1]
@@ -30,7 +29,7 @@ system = [[f_11],
         [f_31]]
 
 model = Model(system, params, y0)
-data = generate_points(model.get_Y(t), steps, n_factor, n_add, seed)
+data = generate_points(model.get_Y(t), final_t, steps, n_factor, n_add, seed)
 
 estimator = Estimator(system, restrictions, data, params)
-estimator.graph(start_t, final_t, steps)
+estimator.graph(t)

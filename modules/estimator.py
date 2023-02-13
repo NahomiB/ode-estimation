@@ -51,7 +51,7 @@ class Estimator:
         return self.__params[:len(self.__params) - len(self.__restrictions)]
 
 
-    def graph(self, start_t, final_t, steps):
+    def graph(self, t):
         """
         Plot the estimated system of equations and the data
 
@@ -65,8 +65,6 @@ class Estimator:
             The number of steps
         """
 
-        t = np.linspace(start_t, final_t, steps)
-        
         # Solve the ODEs
         from scipy.integrate import odeint
         y0 = self.__D[0][1:]
