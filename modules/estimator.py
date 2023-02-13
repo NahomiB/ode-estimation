@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.offsetbox import AnchoredText
 
 # Create a class for the model
-class EDOModel:
+class Estimator:
     """
     A class used to represent a system of linear ordinary differential equations
 
@@ -80,12 +80,13 @@ class EDOModel:
             Y_original = ret_original.T
             self.__original_flag = False
 
-        # Plot the data on three separate curves for S(t), I(t) and R(t)
+        # Plot the aproximated system
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
         for i in range(len(Y)):
             ax.plot(t, Y[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, label='Approx')
 
+        # Plot the original system
         for i in range(len(Y_original)):
             ax.plot(t, Y_original[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, linestyle='dashed', label='Original')
 
@@ -97,7 +98,8 @@ class EDOModel:
         params_text = ''
         for i in range(len(p)):
             if i > 0: params_text += '\n'
-            params_text += f'a{str(i + 1)} = {str(round(p[i], 5))} - Orig: {self.__original_params[i]}'
+            o_param = '- Orig: ' + str(self.__original_params[i]) if len(self.__original_params) > 0 else ''
+            params_text += f'a{str(i + 1)} = {str(round(p[i], 5))} {o_param}'
 
         at = AnchoredText(
             params_text, prop=dict(size=10), frameon=True, loc='upper left')
