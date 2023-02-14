@@ -18,7 +18,7 @@ class Estimator:
         Plot the estimated system of equations and the data
     """
 
-    def __init__(self, system : list, restrictions : list, data : list, original_params = []):
+    def __init__(self, system : list, restrictions : list, data : list, original_data = [], original_params = []):
         """
         Parameters
         ----------
@@ -42,6 +42,7 @@ class Estimator:
         self.__original_params = original_params
         self.__original_flag = False
 
+        self.__original_data = original_data
 
     def params(self) -> list:
         """
@@ -78,19 +79,25 @@ class Estimator:
             Y_original = ret_original.T
             self.__original_flag = False
 
-        # Plot the aproximated system
+
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
+
+        # Plot the aproximated system
         for i in range(len(Y)):
-            ax.plot(t, Y[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, label='Approx')
+            ax.plot(t, Y[i], self.__colors[i % len(self.__colors)], alpha=1, lw=3, label='Approx')
 
         # Plot the original system
         for i in range(len(Y_original)):
-            ax.plot(t, Y_original[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, linestyle='dashed', label='Original')
+            ax.plot(t, Y_original[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, linestyle='dashed', label='Original System')
 
-        # Plot the data as points
+        # Plot the data as a smooth curve points
         for i in range(len(Y)):
-            ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)] + 'o', label='Data')
+            ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)], alpha=0.3, label='Smooth data')
+
+        # Plot the original data as points
+        for i in range(len(Y)):
+            ax.plot(self.__original_data[:, 0], self.__original_data[:, i + 1], self.__colors[i % len(self.__colors)] + 'o', label='Noisy Data')
 
         p = self.params
         params_text = ''
