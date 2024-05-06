@@ -1,5 +1,7 @@
-import numpy as np
+from scipy.integrate import odeint
+
 import matplotlib.pyplot as plt
+
 
 class Model:
 
@@ -11,25 +13,22 @@ class Model:
 
         self.__colors = ['b', 'r', 'g', 'c', 'm', 'y', 'k']
 
-    
-    def get_Y(self, t):
-        
-        from scipy.integrate import odeint
+    def get_y(self, t):
+
         ret = odeint(self.__get_model, self.__init_cond, t)
         return ret.T
 
-
     def graph(self, t):
 
-        Y = self.get_Y(t)
+        y = self.get_y(t)
 
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
 
-        for i in range(len(Y)):
-            ax.plot(t, Y[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2)
+        for i in range(len(y)):
+            ax.plot(t, y[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2)
 
-        ax.set_ylim(0,1.2)
+        ax.set_ylim(0, 1.2)
         ax.yaxis.set_tick_params(length=0)
         ax.xaxis.set_tick_params(length=0)
         ax.grid(visible=True, which='major', c='w', lw=2, ls='-')
@@ -37,7 +36,6 @@ class Model:
             ax.spines[spine].set_visible(False)
         plt.show()
 
-        
     def __get_model(self, y, t):
 
         result = []

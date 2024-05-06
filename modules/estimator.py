@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import AnchoredText
 
+
 # Create a class for the model
 class Estimator:
     """
@@ -18,7 +19,7 @@ class Estimator:
         Plot the estimated system of equations and the data
     """
 
-    def __init__(self, system : list, restrictions : list, data : list, original_data = [], original_params = []):
+    def __init__(self, system: list, restrictions: list, data: list, original_data=[], original_params=[]):
         """
         Parameters
         ----------
@@ -29,8 +30,8 @@ class Estimator:
         data: list
             A set of points that must be approximated
         """
-        
-        self.__colors = ['b', 'r', 'g', 'c', 'm', 'y', 'k']        
+
+        self.__colors = ['b', 'r', 'g', 'c', 'm', 'y', 'k']
 
         self.__system = system
         self.__restrictions = restrictions
@@ -51,13 +52,13 @@ class Estimator:
 
         return self.__params[:len(self.__params) - len(self.__restrictions)]
 
-
     def graph(self, t):
         """
         Plot the estimated system of equations and the data
 
         Parameters
         ----------
+        t:
         start_t : float
             The initial time
         final_t : float
@@ -79,7 +80,6 @@ class Estimator:
             Y_original = ret_original.T
             self.__original_flag = False
 
-
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
 
@@ -89,15 +89,18 @@ class Estimator:
 
         # Plot the original system
         for i in range(len(Y_original)):
-            ax.plot(t, Y_original[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, linestyle='dashed', label='Original System')
+            ax.plot(t, Y_original[i], self.__colors[i % len(self.__colors)], alpha=0.5, lw=2, linestyle='dashed',
+                    label='Original System')
 
         # Plot the data as a smooth curve points
         for i in range(len(Y)):
-            ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)], alpha=0.3, label='Smooth data')
+            ax.plot(self.__D[:, 0], self.__D[:, i + 1], self.__colors[i % len(self.__colors)], alpha=0.3,
+                    label='Smooth data')
 
         # Plot the original data as points
         for i in range(len(Y)):
-            ax.plot(self.__original_data[:, 0], self.__original_data[:, i + 1], self.__colors[i % len(self.__colors)] + 'o', label='Noisy Data')
+            ax.plot(self.__original_data[:, 0], self.__original_data[:, i + 1],
+                    self.__colors[i % len(self.__colors)] + 'o', label='Noisy Data')
 
         p = self.params
         params_text = ''
@@ -111,7 +114,7 @@ class Estimator:
         at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
         ax.add_artist(at)
 
-        ax.set_ylim(0,1.2)
+        ax.set_ylim(0, 1.2)
         ax.yaxis.set_tick_params(length=0)
         ax.xaxis.set_tick_params(length=0)
         ax.grid(visible=True, which='major', c='w', lw=2, ls='-')
@@ -121,25 +124,25 @@ class Estimator:
             ax.spines[spine].set_visible(False)
         plt.show()
 
-
     def __obtain_params(self):
-        
+
         mat_size = len(self.__restrictions)
         for eq in self.__system:
-            mat_size += len(eq)    
+            mat_size += len(eq)
 
-        # Create normal matrix upper part
+            # Create normal matrix upper part
         normal_mat = np.zeros((mat_size, mat_size))
 
         current_row = 0
-        for i in range(len(self.__system)): # For each equation...
-            for j in range(len(self.__system[i])): # ...and for each parameter...
-                for k in range(j, len(self.__system[i])): # ...and for each parameter again...
+        for i in range(len(self.__system)):  # For each equation...
+            for j in range(len(self.__system[i])):  # ...and for each parameter...
+                for k in range(j, len(self.__system[i])):  # ...and for each parameter again...
 
-                    normal_mat[current_row + j][current_row + k] = self.__scalar_product(self.__system[i][j], self.__system[i][k], self.__D)
+                    normal_mat[current_row + j][current_row + k] = self.__scalar_product(self.__system[i][j],
+                                                                                         self.__system[i][k], self.__D)
                     normal_mat[current_row + k][current_row + j] = normal_mat[current_row + j][current_row + k]
             current_row += len(self.__system[i])
-        
+
         # Embed restrictions into normal matrix
         row = mat_size - len(self.__restrictions)
         for r in self.__restrictions:
@@ -162,7 +165,6 @@ class Estimator:
         x = np.linalg.solve(normal_mat, b)
         return x
 
-
     def __get_model(self, y, t):
 
         result = []
@@ -170,12 +172,12 @@ class Estimator:
         for equation in self.__system:
             right_member = 0
             for f in equation:
-                right_member += (self.__params[cont] if self.__original_flag == False else self.__original_params[cont]) * f(t, *y)
+                right_member += (self.__params[cont] if self.__original_flag == False else self.__original_params[
+                    cont]) * f(t, *y)
                 cont += 1
             result.append(right_member)
 
         return result
-
 
     def __scalar_product(self, f, g, D):
 
@@ -184,7 +186,6 @@ class Estimator:
             sum += f(D[i][0], D[i][1], D[i][2], D[i][3]) * g(D[i][0], D[i][1], D[i][2], D[i][3])
         return sum
 
-
     def __scalar_product_deriv(self, col, f, D):
 
         sum = 0
@@ -192,4 +193,3 @@ class Estimator:
             m = (D[i + 1][col] - D[i][col]) / (D[i + 1][0] - D[i][0])
             sum += f(D[i][0], D[i][1], D[i][2], D[i][3]) * m
         return sum
-
